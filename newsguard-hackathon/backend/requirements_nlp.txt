@@ -7,7 +7,7 @@ pandas==2.2.2
 numpy==2.0.1
 gunicorn==22.0.0
 
-# NEW: Modern NLP Libraries
+# Modern NLP Libraries
 torch==2.1.0
 transformers==4.35.0
 sentence-transformers==2.2.2
@@ -19,3 +19,46 @@ textblob==0.17.1
 tqdm==4.66.1
 datasets==2.14.5
 accelerate==0.25.0
+
+# ===== GPU SUPPORT (Optional) =====
+# Uncomment ONE of the following based on your hardware:
+
+# For CUDA 11.8 (NVIDIA GPUs):
+# torch-cuda==2.1.0
+# torch-cuda-runtime==2.1.0
+
+# For CUDA 12.1 (Latest NVIDIA GPUs):
+# torch-cu121==2.1.0
+
+# For ROCm (AMD GPUs):
+# torch-rocm==2.1.0
+
+# For CPU-only (default, works everywhere):
+# (No additional packages needed - CPU mode is default)
+
+# For Apple Metal GPU (M1/M2/M3 Macs):
+# Install torch separately: pip install torch::accelerate
+
+# After installing torch with GPU support, also install:
+# pip install torch-cuda (or torch-cu121, torch-rocm based on your setup)
+
+# ===== QUICK INSTALLATION GUIDE =====
+# CPU-only (Default, slowest but works everywhere):
+#   pip install -r requirements_nlp.txt
+
+# NVIDIA GPU (CUDA 11.8):
+#   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+#   pip install -r requirements_nlp.txt
+
+# NVIDIA GPU (CUDA 12.1):
+#   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+#   pip install -r requirements_nlp.txt
+
+# AMD GPU (ROCm):
+#   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm5.7
+#   pip install -r requirements_nlp.txt
+
+# Apple Mac (M1/M2/M3):
+#   pip install torch torchvision torchaudio
+#   pip install -r requirements_nlp.txt
+

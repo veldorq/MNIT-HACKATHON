@@ -9,6 +9,20 @@ from utils.groq_analyzer import verify_url_credibility
 from utils.enhanced_analyzer import enhanced_analyzer
 from utils.ai_detector import AITextDetector
 
+# ===== NEW: NLP MODULES =====
+try:
+    from utils.ner_extractor import ner_extractor
+    from utils.sentiment_analyzer import sentiment_analyzer
+    from utils.semantic_analyzer import semantic_analyzer
+    from utils.linguistic_analyzer import linguistic_analyzer
+    NLP_AVAILABLE = True
+    logger_init = logging.getLogger(__name__)
+    logger_init.info("✓ NLP modules loaded successfully")
+except Exception as e:
+    NLP_AVAILABLE = False
+    logger_init = logging.getLogger(__name__)
+    logger_init.warning(f"NLP modules not available: {e}. Install with: pip install -r requirements_nlp.txt")
+
 # Setup logging
 logger = logging.getLogger(__name__)
 
@@ -25,11 +39,12 @@ def list_models():
 @analyze_bp.post("/analyze")
 def analyze_news():
     """
-    Main endpoint for FAKE NEWS DETECTION with optional URL verification.
+    Main endpoint for FAKE NEWS DETECTION with optional NLP and URL verification.
     
-    Two INDEPENDENT features:
+    Features:
     1. CORE: Fake news detection (ML model) - ALWAYS performed
-    2. OPTIONAL: URL credibility verification (Groq API) - if check_url=True
+    2. NEW: Modern NLP analysis (sentiment, NER, semantic, linguistic) - if use_nlp=true
+    3. OPTIONAL: URL credibility verification (Groq API) - if check_url=true
     """
     logger.info("=== POST /analyze endpoint called ===")
     
@@ -38,7 +53,8 @@ def analyze_news():
     mode = payload.get("mode")
     url = payload.get("url", "")
     check_url = payload.get("check_url", False)
-    enhanced = payload.get("enhanced", False)  # Enable detailed analysis
+    enhanced = payload.get("enhanced", False)
+    use_nlp = payload.get("use_nlp", False)  # NEW: Enable NLP analysis
 
     # Validate text input
     if not isinstance(text, str) or not text.strip():
@@ -130,6 +146,48 @@ def analyze_news():
         "disclaimer": "This model detects patterns common in modern LLMs. Best on 2016-2018 data. May misclassify well-written real news or human-written sophisticated articles."
     }
 
+    # ===== FEATURE 2: MODERN NLP ANALYSIS (NEW) =====
+    if use_nlp and NLP_AVAILABLE:
+        logger.info("Performing deep NLP analysis...")
+        try:
+            nlp_analysis = {}
+            
+            # 2.1: Sentiment & Bias Analysis
+            logger.debug("Analyzing sentiment and bias...")
+            nlp_analysis["sentiment"] = sentiment_analyzer.analyze_sentiment(cleaned_text)
+            nlp_analysis["bias"] = sentiment_analyzer.detect_bias(cleaned_text)
+            nlp_analysis["emotionalManipulation"] = sentiment_analyzer.detect_emotional_manipulation(cleaned_text)
+            
+            # 2.2: Named Entity Recognition
+            logger.debug("Extracting named entities...")
+            nlp_analysis["entities"] = ner_extractor.extract_entities(cleaned_text)
+            nlp_analysis["entityVerification"] = ner_extractor.verify_entity_claims(cleaned_text)
+            
+            # 2.3: Semantic Analysis
+            logger.debug("Analyzing semantic similarity and coherence...")
+            nlp_analysis["semanticSimilarity"] = semantic_analyzer.get_semantic_similarity(cleaned_text)
+            nlp_analysis["coherence"] = semantic_analyzer.detect_semantic_coherence(cleaned_text)
+            nlp_analysis["sourceCitations"] = semantic_analyzer.find_claim_sources(cleaned_text)
+            
+            # 2.4: Linguistic Analysis
+            logger.debug("Analyzing linguistic patterns...")
+            nlp_analysis["formality"] = linguistic_analyzer.analyze_formality(cleaned_text)
+            nlp_analysis["posPatterns"] = linguistic_analyzer.analyze_pos_patterns(cleaned_text)
+            nlp_analysis["readability"] = linguistic_analyzer.analyze_readability(cleaned_text)
+            nlp_analysis["hedgingLanguage"] = linguistic_analyzer.analyze_hedging_language(cleaned_text)
+            
+            response["nlpAnalysis"] = nlp_analysis
+            
+            logger.info("✓ NLP analysis complete")
+        except Exception as e:
+            logger.error(f"NLP analysis error: {e}")
+            response["nlpAnalysis"] = {"error": f"NLP analysis failed: {str(e)}"}
+    elif use_nlp and not NLP_AVAILABLE:
+        response["nlpAnalysis"] = {
+            "error": "NLP modules not available",
+            "resolution": "Install with: pip install -r backend/requirements_nlp.txt && python -m spacy download en_core_web_sm"
+        }
+
     # ===== FEATURE 3: HYBRID ARTICLE DETECTION (Real news with false tweaks) =====
     # Always perform hybrid detection for real news predictions
     if prediction == "real":
@@ -140,7 +198,7 @@ def analyze_news():
         if hybrid_analysis.get('is_hybrid'):
             logger.warning(f"HYBRID ARTICLE DETECTED: Risk score {hybrid_analysis['hybrid_risk_score']}")
 
-    # ===== FEATURE 2: URL VERIFICATION (Optional - Groq API) =====
+    # ===== FEATURE 4: URL VERIFICATION (Optional - Groq API) =====
     if check_url and url:
         try:
             logger.info(f"Verifying URL credibility for: {url}")
@@ -151,5 +209,6 @@ def analyze_news():
             logger.error(f"URL verification failed: {str(e)}")
             response["urlAnalysis"] = {"error": f"URL verification failed: {str(e)}"}
 
-    logger.info(f"Analysis complete. Features enabled: fake_news=true, url={check_url}")
+    features_enabled = f"fake_news=true, nlp={use_nlp}, url={check_url}"
+    logger.info(f"Analysis complete. Features enabled: {features_enabled}")
     return jsonify(response)
