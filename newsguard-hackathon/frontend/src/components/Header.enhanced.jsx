@@ -1,11 +1,12 @@
+// Enhanced Header Component with better branding and info
 import { APP_NAME } from "../utils/constants";
 
 function Header() {
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/50 bg-gradient-to-r from-slate-50 to-slate-100/50 backdrop-blur-sm shadow-sm">
+    <header className="sticky top-0 z-40 border-b border-slate-200/50 bg-gradient-to-r from-slate-50 to-slate-100/50 backdrop-blur-sm">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold text-lg">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold">
             ✓
           </div>
           <div>
@@ -16,7 +17,7 @@ function Header() {
         
         <nav className="flex items-center gap-4">
           <a 
-            className="text-sm font-medium text-slate-600 rounded-md px-3 py-2 transition hover:bg-white hover:text-slate-900 hover:shadow-sm" 
+            className="text-sm font-medium text-slate-600 rounded-md px-3 py-2 transition hover:bg-white hover:text-slate-900" 
             href="#analyzer"
           >
             Analyze
