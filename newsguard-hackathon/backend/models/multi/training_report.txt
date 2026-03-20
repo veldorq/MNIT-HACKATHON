@@ -1,0 +1,25 @@
+Accuracy: 0.8880
+
+Classification Report:
+              precision    recall  f1-score   support
+
+        FAKE       0.88      0.89      0.89      4604
+        REAL       0.89      0.88      0.89      4604
+
+    accuracy                           0.89      9208
+   macro avg       0.89      0.89      0.89      9208
+weighted avg       0.89      0.89      0.89      9208
+
+Confusion Matrix:
+[[4112  492]
+ [ 539 4065]]
+
+Source counts after prep:
+source
+kaggle    34597
+liar      11439
+
+Class counts after prep:
+label
+REAL    23018
+FAKE    23018

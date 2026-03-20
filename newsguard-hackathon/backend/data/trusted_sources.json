@@ -1,0 +1,25 @@
+{
+  "highly_trusted": [
+    "bbc.com",
+    "reuters.com",
+    "apnews.com",
+    "npr.org",
+    "nytimes.com",
+    "washingtonpost.com",
+    "theguardian.com"
+  ],
+  "trusted": [
+    "cnn.com",
+    "nbcnews.com",
+    "abcnews.go.com",
+    "cbsnews.com",
+    "bloomberg.com",
+    "economist.com",
+    "ft.com"
+  ],
+  "verify_needed": [
+    "*.blogspot.com",
+    "*.wordpress.com",
+    "medium.com"
+  ]
+}

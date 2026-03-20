@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pkl
+.venv/
+venv/
+env/
+
+# Node
+node_modules/
+dist/
+build/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

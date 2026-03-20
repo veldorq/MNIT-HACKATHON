@@ -1,0 +1,28 @@
+Accuracy: 0.8909
+F1-Macro: 0.8909
+F1-Weighted: 0.8909
+
+Classification Report:
+              precision    recall  f1-score   support
+
+        FAKE       0.89      0.89      0.89      4539
+        REAL       0.89      0.90      0.89      4539
+
+    accuracy                           0.89      9078
+   macro avg       0.89      0.89      0.89      9078
+weighted avg       0.89      0.89      0.89      9078
+
+Confusion Matrix:
+[[4021  518]
+ [ 472 4067]]
+
+Source counts after prep:
+source
+kaggle                    30041
+fakenewsnet_gossipcop     14591
+fakenewsnet_politifact      756
+
+Class counts after prep:
+label
+FAKE    22694
+REAL    22694

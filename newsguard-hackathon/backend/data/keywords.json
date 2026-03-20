@@ -1,0 +1,28 @@
+{
+  "sensational_words": [
+    "shocking",
+    "unbelievable",
+    "breaking",
+    "urgent",
+    "bombshell",
+    "exposed",
+    "revealed",
+    "exclusive",
+    "must see"
+  ],
+  "hedge_words": [
+    "allegedly",
+    "reportedly",
+    "sources say",
+    "rumored",
+    "claims",
+    "suggests",
+    "appears to be"
+  ],
+  "clickbait_phrases": [
+    "what happened next",
+    "number 7 will shock you",
+    "doctors hate this",
+    "this one trick"
+  ]
+}
