@@ -96,10 +96,10 @@ function LandingPage() {
 
           <div className="mt-16 flex flex-wrap justify-center gap-8 text-center md:gap-16">
             <div className="space-y-3">
-              <div className="inline-block rounded-full bg-blue-100 px-6 py-3">
-                <div className="font-headline text-4xl font-light text-blue-600">99.23%</div>
+              <div className="inline-block rounded-3xl bg-blue-100 px-8 py-4">
+                <div className="font-headline text-5xl font-light text-blue-600">99.23%</div>
               </div>
-              <div className="text-sm italic text-slate-700">Peak Accuracy</div>
+              <div className="text-lg italic text-slate-700 font-light">Peak Accuracy</div>
               <p className="text-xs text-slate-500 max-w-xs">Achieved using TF-IDF vectorization and Passive Aggressive Classifier on 8,837 Kaggle test samples.</p>
             </div>
             <div className="hidden h-8 w-px bg-slate-300 md:block" />

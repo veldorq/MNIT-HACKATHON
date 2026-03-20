@@ -101,10 +101,10 @@ function AboutExtendedPage() {
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             <div className="glass rounded-2xl p-8 text-slate-900">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-100">
-                <span className="font-headline text-3xl italic text-blue-600">99.23%</span>
+              <div className="mb-4 inline-block rounded-3xl bg-blue-100 px-8 py-4">
+                <span className="font-headline text-5xl font-light text-blue-600">99.23%</span>
               </div>
-              <h4 className="mb-3 font-headline text-xl italic">Peak Accuracy</h4>
+              <h4 className="mb-3 font-headline text-lg italic font-light">Peak Accuracy</h4>
               <p className="text-sm text-slate-700">
                 Achieved using TF-IDF vectorization and Passive Aggressive Classifier on 8,837 Kaggle test samples.
               </p>
