@@ -31,7 +31,7 @@ class TestSuite:
         print(f"{'='*60}")
     
     def print_test(self, name, status, details=""):
-        symbol = "✓" if status else "✗"
+        symbol = "[PASS]" if status else "[FAIL]"
         print(f"{symbol} {name}")
         if details:
             print(f"  └─ {details}")
@@ -243,16 +243,16 @@ class TestSuite:
         pass_rate = (self.tests_passed / total * 100) if total > 0 else 0
         
         print(f"\nTotal Tests: {total}")
-        print(f"Passed: {self.tests_passed} ✓")
-        print(f"Failed: {self.tests_failed} ✗")
+        print(f"Passed: {self.tests_passed} [PASS]")
+        print(f"Failed: {self.tests_failed} [FAIL]")
         print(f"Pass Rate: {pass_rate:.1f}%")
         
         if pass_rate >= 80:
-            print("\n🎉 EXCELLENT: System is production-ready!")
+            print("\n[SUCCESS] System is production-ready!")
         elif pass_rate >= 60:
-            print("\n⚠️  CAUTION: Some tests failed, review needed")
+            print("\n[WARNING] Some tests failed, review needed")
         else:
-            print("\n❌ CRITICAL: Major issues detected, fix before deployment")
+            print("\n[ERROR] Major issues detected, fix before deployment")
         
         return pass_rate >= 80
 
