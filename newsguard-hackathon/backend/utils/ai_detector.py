@@ -15,43 +15,48 @@ class AITextDetector:
         self.patterns = {
             'perfect_structure': {
                 'regex': r'\b(however|therefore|furthermore|moreover|additionally|consequently|thus|hence)\b',
-                'weight': 0.25,
+                'weight': 0.28,  # Increased from 0.25
                 'desc': 'Unnaturally frequent transition words'
             },
             'balanced_tone': {
                 'regex': r'(on one hand|on the other hand|while|although|nonetheless|conversely|in contrast)',
-                'weight': 0.22,
+                'weight': 0.25,  # Increased from 0.22
                 'desc': 'Always presents multiple sides (human fake news is one-sided)'
             },
             'vague_sources': {
                 'regex': r'(some experts|researchers say|studies show|it is believed|according to sources|some argue|it is thought)',
-                'weight': 0.25,
+                'weight': 0.28,  # Increased from 0.25
                 'desc': 'Vague attribution instead of specific sources'
             },
             'statistical_abundance': {
                 'regex': r'\b(\d+%|\d+ out of \d+|\d+ million|\d+\.?\d+ billion|\d+\.\d+%)',
-                'weight': 0.18,
+                'weight': 0.22,  # Increased from 0.18
                 'desc': 'Too many specific statistics'
             },
             'hedging_language': {
-                'regex': r'\b(may|might|could|potentially|arguably|appears to|seems to|tends to|suggests that|indicate that|potentially)\b',
-                'weight': 0.28,
+                'regex': r'\b(may|might|could|potentially|arguably|appears to|seems to|tends to|suggests that|indicate that)\b',
+                'weight': 0.30,  # Increased from 0.28
                 'desc': 'Excessive hedging language'
             },
             'corporate_speak': {
-                'regex': r'(stakeholders|synergy|leverage|optimize|best practices|moving forward|paradigm|scalable|innovative|strategic)',
-                'weight': 0.20,
+                'regex': r'\b(stakeholders|synergy|leverage|optimize|best practices|moving forward|paradigm|scalable|innovative|strategic|framework|solution|implement|facilitate|maximize)\b',
+                'weight': 0.26,  # Increased from 0.20 and added more terms
                 'desc': 'Corporate jargon (AI trained on business text)'
             },
-            'perfect_grammar': {
-                'regex': r'\bit\s+is\b|\bthat\s+is\b',  # Prefers "it is" over contractions
-                'weight': 0.15,
-                'desc': 'Excessive "it is" over contractions (AI avoids contractions)'
+            'no_contractions': {
+                'regex': r"\bcan't|\bwon't|\bdon't|\bit's|\bI'm|\bwe're|\bthey're|\bisn't|\baren't",
+                'weight': -0.15,  # Negative weight - presence of contractions reduces AI score
+                'desc': 'Natural contractions (human language feature)'
             },
             'qualifiers': {
-                'regex': r'(to some extent|in a sense|one might argue|it is worth noting|it is important to|it is crucial to)',
-                'weight': 0.24,
+                'regex': r'\b(to some extent|in a sense|one might argue|it is worth noting|it is important to|it is crucial to|it should be noted that|it must be noted)\b',
+                'weight': 0.27,  # Increased from 0.24
                 'desc': 'Excessive qualifiers and softening phrases'
+            },
+            'formal_discourse': {
+                'regex': r'\b(aforementioned|notwithstanding|heretofore|henceforth|pursuant to|vis-à-vis|in lieu of|denote|facilitate|substantiate)\b',
+                'weight': 0.24,
+                'desc': 'Overly formal discourse markers'
             }
         }
     
@@ -83,9 +88,13 @@ class AITextDetector:
                     
                     # Score increases exponentially with density (more aggressive detection)
                     # For every match, we scale up the contribution
-                    pattern_score = min(pattern_info['weight'] * (1 + min(density, 3)), pattern_info['weight'] * 1.5)
+                    if pattern_info['weight'] < 0:  # Negative weights (contractions are human)
+                        pattern_score = pattern_info['weight'] * min(1.0, density / 2)  # Reduce impact
+                    else:
+                        pattern_score = min(pattern_info['weight'] * (1 + min(density, 3)), pattern_info['weight'] * 1.5)
                     
-                    pattern_count_with_matches += 1
+                    if pattern_info['weight'] > 0:
+                        pattern_count_with_matches += 1
                 else:
                     pattern_score = 0.0
                     density = 0.0
@@ -104,27 +113,43 @@ class AITextDetector:
         
         # Normalize to 0-1 scale with pattern diversity bonus
         # Multiple patterns working together = stronger AI signal
-        max_possible_score = sum(p['weight'] * 1.5 for p in self.patterns.values())
+        positive_weights = sum(p['weight'] for p in self.patterns.values() if p['weight'] > 0)
+        max_possible_score = positive_weights * 1.5
         
-        # Base score from pattern matches
-        ai_probability = min(1.0, total_score / max_possible_score) if max_possible_score > 0 else 0.0
+        # Base score from pattern matches (clamped to 0-1)
+        ai_probability = min(1.0, max(0.0, total_score / max_possible_score)) if max_possible_score > 0 else 0.0
         
         # Bonus if multiple patterns detected (AI uses multiple techniques)
-        pattern_diversity_bonus = min(0.15, (pattern_count_with_matches / len(self.patterns)) * 0.25)
+        pattern_diversity_bonus = min(0.15, (pattern_count_with_matches / (len([p for p in self.patterns.values() if p['weight'] > 0]))) * 0.25)
         ai_probability = min(1.0, ai_probability + pattern_diversity_bonus)
         
         return ai_probability, breakdown
     
     def get_ai_verdict(self, ai_score: float) -> str:
         """Get human-readable verdict about AI likelihood"""
-        if ai_score >= 0.65:
+        if ai_score >= 0.60:
             return "Very likely AI-generated"
-        elif ai_score >= 0.45:
+        elif ai_score >= 0.40:
             return "Possibly AI-generated"
-        elif ai_score >= 0.25:
+        elif ai_score >= 0.20:
             return "Some AI patterns detected"
         else:
             return "Unlikely to be AI-generated"
+    
+    def detect(self, text: str) -> Dict:
+        """
+        Simple interface for AI detection
+        Returns dict with score, verdict, and indicators
+        """
+        score, indicators = self.detect_ai_indicators(text)
+        verdict = self.get_ai_verdict(score)
+        
+        return {
+            'score': round(score, 3),
+            'verdict': verdict,
+            'indicators': indicators,
+            'is_ai': score >= 0.60  # Strong AI signal if score >= 0.60 (lowered from 0.65)
+        }
 
 
 # Quick test
