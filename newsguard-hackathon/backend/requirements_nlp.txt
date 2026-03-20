@@ -1,0 +1,21 @@
+# Original requirements
+flask==3.0.3
+flask-cors==4.0.1
+python-dotenv==1.0.1
+scikit-learn==1.5.1
+pandas==2.2.2
+numpy==2.0.1
+gunicorn==22.0.0
+
+# NEW: Modern NLP Libraries
+torch==2.1.0
+transformers==4.35.0
+sentence-transformers==2.2.2
+spacy==3.7.2
+nltk==3.9.1
+textblob==0.17.1
+
+# NLP-Supporting Libraries
+tqdm==4.66.1
+datasets==2.14.5
+accelerate==0.25.0
